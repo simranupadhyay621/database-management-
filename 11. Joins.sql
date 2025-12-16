@@ -192,3 +192,187 @@ SELECT
     s.student_name
 FROM students s
 RIGHT JOIN courses c ON c.course_id=s.course_id;
+
+#join_based(assignment)
+
+create table employee(
+emp_id int,
+emp_name varchar(20),
+dept_id int,
+salary int
+);
+
+insert into employee(emp_id,emp_name,dept_id,salary)
+values
+(1,"john",101,50000),
+(2,"emma",101,65000),
+(3,"raj",102,45000),
+(4,"meera",103,70000),
+(5,"ravi",102,48000),
+(6,"naina",103,52000),
+(7,"alex",101,58000);
+
+select * from employee;
+
+create table department(
+dept_id int,
+dept_name varchar(20)
+);
+
+insert into department(dept_id,dept_name)
+values
+(101,"sales"),
+(102,"marketing"),
+(103,"finance"),
+(104,"hr");
+
+select * from department;
+
+-- 1- Display employee names with their department name.
+
+select e.emp_name , d.dept_name
+from employee e 
+inner join department d on e.dept_id=d.dept_id;
+
+-- 2- List all employees including those with no matching department.
+
+select e.emp_id ,e.emp_name , d.dept_name
+from employee e 
+left join department d on e.dept_id=d.dept_id;
+
+-- 3- List all departments even if there are no employees.
+
+select d.dept_name ,e.emp_name
+from department d 
+left join employee e on d.dept_id=e.dept_id;
+
+
+-- 4- Show employees from the Sales department.
+
+select e.emp_name ,d.dept_name
+from employee e 
+left join department d on e.dept_id=d.dept_id
+where d.dept_name="sales" ;
+
+-- 5- Find the top 3 highest paid employees.
+
+select e.emp_name , max(salary)
+from employee e
+left join department d on e.dept_id=d.dept_id
+group by e.emp_name
+order by max(salary) desc
+limit 3;
+
+-- 6- Find employees earning more than 50,000 from Marketing.
+
+select e.emp_name,e.salary,d.dept_name
+from employee e
+left join department d on e.dept_id=d.dept_id
+where d.dept_name="marketing" and e.salary>50000;
+
+-- 7- Count employees in each department.
+
+select d.dept_name, count(emp_name)
+from department d 
+inner join employee e on e.dept_id=d.dept_id
+group by d.dept_name
+order by count(emp_name);
+
+-- 8- Show departments having more than 2 employees.
+
+select d.dept_name,count(emp_name) as emp_name
+from department d 
+inner join employee e on d.dept_id=e.dept_id
+group by d.dept_name
+having count(emp_name)>2;
+
+-- 9- Show highest salary in each department.
+
+select d.dept_name,avg(salary) as salary
+from department d 
+inner join employee e on d.dept_id=e.dept_id
+group by d.dept_name
+order by avg(salary) desc
+limit 1;
+
+-- 10- Show employees whose salary is above department average.
+
+select e.emp_name,d.dept_name,e.salary
+from employee e 
+inner join department d on e.dept_id=d.dept_id
+where e.salary>(select avg(salary) from employee where dept_id=e.dept_id)
+order by e.salary;
+
+-- 11- Show employees and their departments sorted by department name.
+
+select e.emp_name, d.dept_name
+from employee e 
+inner join department d on e.dept_id=d.dept_id
+order by d.dept_id desc;
+
+-- 12- List the 2 lowest-paid employees with department names.
+
+select e.emp_name,d.dept_name,e.salary
+from employee e 
+inner join department d on e.dept_id=d.dept_id
+order by e.salary asc
+limit 2;
+
+-- 13- Show total salary expenditure per department.
+
+select d.dept_name,sum(salary)
+from employee e 
+inner join department d on e.dept_id=d.dept_id
+group by d.dept_name;
+
+-- 14- Show departments where the total salary spent is more than 150,000.
+
+select d.dept_name,sum(salary)
+from employee e 
+inner join department d on e.dept_id=d.dept_id
+group by d.dept_name
+having sum(salary)>150000;
+
+-- 15- Show employees who belong to departments starting with 'S'.
+
+select e.emp_name,d.dept_name
+from employee e 
+inner join department d on e.dept_id=d.dept_id
+where d.dept_name like "s%";
+
+-- 16- Find employees whose salary is the highest in their department.
+
+select e.emp_name,d.dept_name,e.salary
+from employee e
+inner join department d on e.dept_id=d.dept_id
+where e.salary=(select max(salary) from employee where dept_id=e.dept_id);
+
+-- 17- Show employees and departments sorted by salary descending.
+
+select emp_name,d.dept_name,e.salary
+from employee e 
+inner join department d on e.dept_id=d.dept_id
+order by e.salary desc;
+
+-- 18- Count how many employees earn above 50,000 per department. 
+
+select d.dept_name,count(emp_name) as emp_name
+from employee e 
+inner join department d on e.dept_id=d.dept_id
+where salary>50000
+group by d.dept_name
+order by count(emp_name);
+
+-- 19- Show employee name, department, and salary for employees between 45,000 and 60,000.
+
+select e.emp_name,d.dept_name,e.salary
+from employee e 
+inner join department d on e.dept_id=d.dept_id
+where salary between 45000 and 60000;
+
+-- 20- Find departments with no employees.
+
+select d.dept_name ,e.emp_name
+from department d 
+left join employee e on d.dept_id=e.dept_id
+where e.emp_name is null;
